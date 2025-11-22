@@ -82,7 +82,9 @@ int assemble_bytecode(char* program, struct vm_state* state) {
 void get_label_address(struct label* address_table, int address_counter, char* label_name, int* address) {
     for (int i = 0; i < address_counter; i++) {
         if (strcmp(address_table[i].name, label_name) == 0) {
-	    printf("Returning label address %d", address_table[i].address);
+            if (DEBUG) {
+                printf("Returning label address %d", address_table[i].address);
+            }
             *address = address_table[i].address;
             return;
         }
