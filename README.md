@@ -1,10 +1,11 @@
 # Stack-Based VM w/ JIT
 
-(Currently W.I.P)
+A stack-based bytecode VM with multi-arch JIT compilation. The example Fibonacci sequence program works:
 
-A stack-based bytecode VM with multi-arch JIT compilation 
+<img width="500" height="310" alt="image" src="https://github.com/user-attachments/assets/8e2d0e12-b371-46fd-94bb-5ffba8670469" />
 
-Planned features:
+
+W.I.P features:
 - Tagged Objects
 - Multi arch JIT targeting x86_64 & RISC-V
 
