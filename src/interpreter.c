@@ -18,9 +18,10 @@ void print_address_table(vm_state* state) {
 }
 
 void print_state(vm_state* state) {
-    if (!DEBUG) {
-        return;
-    }
+
+    // Print address table
+    print_address_table(state);
+    printf("\n");
 
     // Print bytecode
     printf("Bytecode: ");
@@ -28,10 +29,6 @@ void print_state(vm_state* state) {
         printf("%02X ", (unsigned char)state->bytecode[i]);
     }
     printf("\n");
-
-    // Print address table
-    print_address_table(state);
-
 
     // Print stack
     printf("Stack:    X ");
@@ -43,7 +40,7 @@ void print_state(vm_state* state) {
 
     printf("Pointers: Instruction: %d, Stack %d\n", state->ip, state->sp);
 
-    printf("\n");
+    printf("----END OP\n\n");
 }
 
 void interpret_bytecode(vm_state* state) {
@@ -61,8 +58,14 @@ void interpret_bytecode(vm_state* state) {
     opcodes[OP_STR] = op_str;
     opcodes[OP_LOD] = op_lod;
     opcodes[OP_JMP] = op_jmp;
+    opcodes[OP_CAL] = op_cal;
+    opcodes[OP_RET] = op_ret;
 
     while (state->ip < PROGRAM_SIZE) {
+
+        if (DEBUG) {
+            printf("----START OP @ip %d in frame no. %d\n", state->ip, state->fp);
+        }
 
         int op = state->bytecode[state->ip];
 
@@ -72,13 +75,22 @@ void interpret_bytecode(vm_state* state) {
             break;
         }
 
-        opcodes[op](state);
+        opcodes[op](state); // op call
 
         state->ip++;
 
+        // Check we haven't exited the last frame
+        if (state->fp < 0) {
+            printf("Exited last frame, halting...\n");
+            break;
+        }
+
         // getchar();
         usleep(20000); // 20ms
-        print_state(state);
+
+        if (DEBUG) {
+            print_state(state);
+        }
     }
 }
 
@@ -171,19 +183,39 @@ void op_prt(vm_state* state) {
 void op_str(vm_state* state) {
     int mem_address = get_operand(state);
     int val = pop_val(state);
-    state->frame_stack[state->fp].local_mem[mem_address] = val;
+    state->frame_stack[state->fp]->local_mem[mem_address] = val;
     dbg("Executed STR\n");
 }
 
 void op_lod(vm_state* state) {
     int mem_address = get_operand(state);
-    int val = state->frame_stack[state->fp].local_mem[mem_address];
+    int val = state->frame_stack[state->fp]->local_mem[mem_address];
     push_val(state, val);
     dbg("Executed LOD\n");
 }
 
 void op_jmp(vm_state* state) {
-    int bytecode_address = get_operand(state);
-    state->ip = bytecode_address - 1; // -1 to compensate for ip++
+    int target_address = get_operand(state);
+    state->ip = target_address - 1; // -1 to compensate for ip++
     dbg("Executed JMP\n");
+}
+
+// Set up a stack frame and jump to it
+void op_cal(vm_state* state) {
+    int return_address = state->ip + 1;
+    frame* new_frame = malloc(sizeof(frame));
+    new_frame->return_address = return_address;
+    (state->fp)++;
+    state->frame_stack[state->fp] = new_frame;
+    op_jmp(state);
+    dbg("Executed CAL\n");
+}
+
+void op_ret(vm_state* state) {
+    dbg("Executing RET...\n");
+    int return_address = state->frame_stack[state->fp]->return_address;
+    free(state->frame_stack[state->fp]);
+    (state->fp)--;
+    state->ip = return_address;
+    dbg("Executed RET\n");
 }

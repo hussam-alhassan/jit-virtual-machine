@@ -6,6 +6,7 @@
 #define DEBUG 0
 
 #define PROGRAM_SIZE 1024
+#define JUMP_TABLE_SIZE 256
 #define MEM_SIZE 256
 #define STACK_SIZE 256
 #define STACK_NULL 0

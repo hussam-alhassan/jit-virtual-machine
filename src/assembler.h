@@ -4,9 +4,9 @@
 #include "config.h"
 #include "types.h"
 
-struct vm_state;
+typedef struct vm_state vm_state;
 
-int assemble_bytecode(char* program, struct vm_state* state);
+int assemble_bytecode(char* program, vm_state* state);
 
 void get_label_address(struct label* address_table, int address_counter, char* label_name, int* address);
 

@@ -4,6 +4,6 @@
 
 #include <string.h>
 
-int load_program(char* program);
+int load_program(char* program_buffer, char* file_name);
 
 #endif // LOADER_H

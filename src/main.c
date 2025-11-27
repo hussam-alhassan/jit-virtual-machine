@@ -17,7 +17,7 @@ int main() {
     //int bytecode[PROGRAM_SIZE];
     //struct label address_table[PROGRAM_SIZE];
 
-    struct vm_state state;
+    vm_state state;
 
     memset(&state, 0, sizeof(state));
     memset(state.address_table, -1, sizeof(state.address_table));
@@ -26,7 +26,8 @@ int main() {
     state.sp = -1;
 
     // Load program
-    load_program(program);
+    char* file_name = "calls.bc";
+    load_program(program, file_name);
 
     // Assemble to bytecode
     printf("\nAssembling Bytecode...\n");
@@ -39,7 +40,15 @@ int main() {
     main_frame.label = "MAIN";
 
     state.fp = 0;
-    state.frame_stack[state.fp] = main_frame;
+    state.frame_stack[state.fp] = &main_frame;
+
+    // Check if MAIN entry point exists
+    for (int i = 0; i < JUMP_TABLE_SIZE; i++) {
+        if (strncmp(state.address_table[i].name, "@MAIN", 4) == 0) {
+            state.ip = state.address_table[i].address;
+            break;
+        }
+    }
 
     // Run program
     printf("\nRunning Bytecode...\n");

@@ -4,23 +4,27 @@
 #include "config.h"
 #include "types.h"
 
-typedef struct {
+typedef struct frame frame;
+
+struct frame{
     int local_mem[MEM_SIZE];                  // Local per function memory
     int return_address;
     char* label;                              // Points to label in address table
-} frame;
+};
 
-typedef struct {
+typedef struct vm_state vm_state;
+
+struct vm_state {
     int bytecode[PROGRAM_SIZE];               // Read-only program memory
     struct label address_table[PROGRAM_SIZE]; // Symbols
     int ip;                                   // Instruction pointer
     int sp;                                   // Stack pointer
     int stack[STACK_SIZE];                    // Stack
     int global_mem[MEM_SIZE];                 // Global memory
-    frame frame_stack[STACK_SIZE];            // Frame stack
+    frame* frame_stack[STACK_SIZE];           // Frame stack
     int fp;                                   // Frame Pointer
     // Some object store?
-} vm_state;
+};
 
 void interpret_bytecode(vm_state* state);
 
@@ -33,6 +37,8 @@ void op_prt(vm_state* state);
 void op_str(vm_state* state);
 void op_lod(vm_state* state);
 void op_jmp(vm_state* state);
+void op_cal(vm_state* state); 
+void op_ret(vm_state* state);
 
 
 #endif // INTERPRETER_H

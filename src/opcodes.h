@@ -11,5 +11,7 @@
 #define OP_STR 0x07 // Store
 #define OP_LOD 0x08 // Load
 #define OP_JMP 0x09 // Jump
+#define OP_CAL 0x10 // Call
+#define OP_RET 0x11 // Return
 
 #endif // OPCODES_H
