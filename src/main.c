@@ -34,6 +34,13 @@ int main() {
     // print_bytecode(bytecode);
     // print_address_table(address_table);
 
+    // Set up initial frame
+    frame main_frame;
+    main_frame.label = "MAIN";
+
+    state.fp = 0;
+    state.frame_stack[state.fp] = main_frame;
+
     // Run program
     printf("\nRunning Bytecode...\n");
     interpret_bytecode(&state);

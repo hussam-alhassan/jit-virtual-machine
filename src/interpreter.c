@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 
-void print_address_table(struct vm_state* state) {
+void print_address_table(vm_state* state) {
     printf("\nAddress Table:\n");
     for (int i = 0; i < PROGRAM_SIZE; i++) {
         if (state->address_table[i].address != -1) {
@@ -17,7 +17,7 @@ void print_address_table(struct vm_state* state) {
     }
 }
 
-void print_state(struct vm_state* state) {
+void print_state(vm_state* state) {
     if (!DEBUG) {
         return;
     }
@@ -46,11 +46,11 @@ void print_state(struct vm_state* state) {
     printf("\n");
 }
 
-void interpret_bytecode(struct vm_state* state) {
+void interpret_bytecode(vm_state* state) {
 
     // Load all opcodes
 
-    void (*opcodes[256])(struct vm_state* state);
+    void (*opcodes[256])(vm_state* state);
 
     opcodes[OP_ADD] = op_add;
     opcodes[OP_SUB] = op_sub;
@@ -88,7 +88,9 @@ void dbg(char* message) {
     }
 }
 
-void push_val(struct vm_state* state, int val) {
+/* ==----- Helper Functions -----== */
+
+void push_val(vm_state* state, int val) {
     (state->sp)++;
 	
     if (state->sp >= STACK_SIZE - 1) {
@@ -106,18 +108,28 @@ void push_val(struct vm_state* state, int val) {
 
 }
 
-int pop_val(struct vm_state* state) {
+int pop_val(vm_state* state) {
     int value = state->stack[(state->sp)];
 
     state->stack[(state->sp)--] = STACK_NULL;
     return value;
 }
 
-int get_operand(struct vm_state* state) {
+int get_operand(vm_state* state) {
     return state->bytecode[++(state->ip)];
 }
 
-void op_add(struct vm_state* state) {
+void store_local(vm_state* state, int value) {
+
+}
+
+int load_local(vm_state* state) {
+
+}
+
+/* ==----- Opcodes -----== */
+
+void op_add(vm_state* state) {
 
     int operand_1 = pop_val(state);
     int operand_2 = pop_val(state);
@@ -126,51 +138,51 @@ void op_add(struct vm_state* state) {
     dbg("Executed ADD\n");
 }
 
-void op_sub(struct vm_state* state) {
+void op_sub(vm_state* state) {
     dbg("Executed SUB\n");
 }
 
-void op_psh(struct vm_state* state) {
+void op_psh(vm_state* state) {
 
     int value = get_operand(state);
     push_val(state, value);
     dbg("Executed PSH\n");
 }
 
-void op_pop(struct vm_state* state) {
+void op_pop(vm_state* state) {
     pop_val(state);
     dbg("Executed POP\n");
 }
 
-void op_dup(struct vm_state* state) {
+void op_dup(vm_state* state) {
     int val = pop_val(state);
     push_val(state, val);
     push_val(state, val);
     dbg("Executed DUP\n");
 }
 
-void op_prt(struct vm_state* state) {
+void op_prt(vm_state* state) {
     int val = pop_val(state);
     printf("PRINT: %d\n", val);
     push_val(state, val);
     dbg("Executed PRT\n");
 }
 
-void op_str(struct vm_state* state) {
+void op_str(vm_state* state) {
     int mem_address = get_operand(state);
     int val = pop_val(state);
-    state->local_mem[mem_address] = val;
+    state->frame_stack[state->fp].local_mem[mem_address] = val;
     dbg("Executed STR\n");
 }
 
-void op_lod(struct vm_state* state) {
+void op_lod(vm_state* state) {
     int mem_address = get_operand(state);
-    int val = state->local_mem[mem_address];
+    int val = state->frame_stack[state->fp].local_mem[mem_address];
     push_val(state, val);
     dbg("Executed LOD\n");
 }
 
-void op_jmp(struct vm_state* state) {
+void op_jmp(vm_state* state) {
     int bytecode_address = get_operand(state);
     state->ip = bytecode_address - 1; // -1 to compensate for ip++
     dbg("Executed JMP\n");
