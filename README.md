@@ -7,7 +7,7 @@ A stack-based bytecode VM with multi-arch JIT compilation. The example Fibonacci
 
 W.I.P features:
 - Tagged Objects
-- Multi arch JIT targeting x86_64 & RISC-V
+- Multi arch JIT targeting ARM64 & x86_64
 
 Instruction set:
 
