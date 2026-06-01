@@ -18,7 +18,7 @@ void emit_psh(jitc* jc) {
     int val = get_jit_operand(jc);
     
     if (DEBUG) {
-        printf("JIT PSH with operand %d\n", val);
+        printf("JIT emit PSH with operand %d\n", val);
     }
 
     // TODO: Add support for negative numbers and those larger than 16 bits
@@ -46,7 +46,7 @@ void emit_psh(jitc* jc) {
 
 void emit_add(jitc* jc) {
     if (DEBUG) {
-        printf("JIT ADD\n");
+        printf("JIT emit ADD\n");
     }
 
     unsigned char add[] = {
@@ -64,12 +64,16 @@ void emit_add(jitc* jc) {
 
 void emit_prt(jitc* jc) {
     if (DEBUG) {
-        printf("JIT PRT\n");
+        printf("JIT emit PRT\n");
     }
 
     unsigned char prt[] = {
-        0x02, 0xc4, 0x5f, 0xb8, 0x23, 0x00, 0x40, 0xf9, 0xe0, 0x07, 0xbf, 0xa9,
-        0xe0, 0x03, 0x02, 0x2a, 0x60, 0x00, 0x3f, 0xd6, 0xe0, 0x07, 0xc1, 0xa8
+        0x02, 0xc4, 0x5f, 0xb8,
+        0x23, 0x00, 0x40, 0xf9,
+        0xe0, 0x07, 0xbf, 0xa9,
+        0xe0, 0x03, 0x02, 0x2a,
+        0x60, 0x00, 0x3f, 0xd6,
+        0xe0, 0x07, 0xc1, 0xa8
     };
 
     memcpy(jc->native_code + jc->native_size, prt, sizeof(prt));
@@ -80,7 +84,7 @@ void emit_prt(jitc* jc) {
 
 void emit_dup(jitc* jc) {
     if (DEBUG) {
-        printf("JIT DUP\n");
+        printf("JIT emit DUP\n");
     }
 
     unsigned char dup[] = {
@@ -96,7 +100,7 @@ void emit_dup(jitc* jc) {
 
 void emit_ret(jitc* jc) {
     if (DEBUG) {
-        printf("JIT RET\n");
+        printf("JIT emit RET\n");
     }
 
     unsigned char ret[] = {
@@ -113,7 +117,7 @@ void emit_str(jitc* jc) {
     int index = get_jit_operand(jc);
     
     if (DEBUG) {
-        printf("JIT STR with index %d\n", index);
+        printf("JIT emit STR with index %d\n", index);
     }
 
     uint32_t arm64_str_base = 0xb9000025;  // str w5, [x1, #0] 
@@ -140,7 +144,7 @@ void emit_lod(jitc* jc) {
     int index = get_jit_operand(jc);
     
     if (DEBUG) {
-        printf("JIT STR with index %d\n", index);
+        printf("JIT emit LOD with index %d\n", index);
     }
 
     uint32_t arm64_lod_base = 0xb9400025; // ldr w5, [x1, #0]
@@ -185,7 +189,8 @@ void emit_add(vm_state* state) {
 
 #endif
 
-void emit_native_bytes(jitc* jc) { // jit compiler
+// Native code is emitted on a function/routine basis, ending in a return.
+void emit_native_routine(jitc* jc) { // jit compiler
     // Setup jit emission instructions
     emit_function emit_native[256];
 

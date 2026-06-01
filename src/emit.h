@@ -3,6 +3,6 @@
 
 #include <string.h>
 
-void emit_native_bytes(jitc* jc);
+void emit_native_routine(jitc* jc);
 
 #endif // EMIT_H

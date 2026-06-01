@@ -73,14 +73,14 @@ void write_native_code(void** native_address, unsigned char* machine_code,  size
 void jit_compile(vm_state* state) {
     jitc jc;
     memset(&jc, 0, sizeof(jitc));
-    jc.bytecode = &state->bytecode;
+    jc.bytecode = (int*)(&state->bytecode);
 
     if (DEBUG) {
         printf("Contents of bytecode before emission:\n");
         print_bytecode(state);
     }
 
-    emit_native_bytes(&jc);
+    emit_native_routine(&jc);
 
     if (DEBUG) {
         printf("Contents of native_code after emission:\n");

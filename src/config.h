@@ -3,7 +3,7 @@
 
 /* VM Configuration Constants */
 
-#define DEBUG 1
+#define DEBUG 0
 
 #define PROGRAM_SIZE 1024
 #define FUNC_TABLE_SIZE 256

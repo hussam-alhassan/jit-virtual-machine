@@ -61,13 +61,17 @@ int main() {
 	printf("MAIN: Initial frame set.\n");
 
     // TEST emission
-    native_test(&state);
+    //native_test(&state);
 
-    return 0;
+    //return 0;
 
     // Run program
     printf("\nRunning Bytecode...\n");
     interpret_bytecode(&state);
+
+    printf("\n----------------------------------------------------\n");
+    printf("\nProgram halted.\n");
+    print_vm_state(&state);
        
     return 0;
 }
