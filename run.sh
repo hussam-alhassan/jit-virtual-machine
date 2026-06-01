@@ -1,3 +1,3 @@
 make clean
 make all
-build/vm
+make run-aarch64
